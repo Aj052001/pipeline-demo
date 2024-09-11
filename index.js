@@ -14,6 +14,11 @@ app.get('/login', (req, res) => {
     res.send('Please login into the website');
 });
 
+app.get('/admin', (req, res) => {
+    res.send('welcome to the world');
+});
+
+
 
 
 // Start the server
