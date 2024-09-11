@@ -18,6 +18,9 @@ app.get('/admin', (req, res) => {
     res.send('welcome to the world');
 });
 
+app.get('/register', (req, res) => {
+    res.send('welcome to the world');
+});
 
 
 
