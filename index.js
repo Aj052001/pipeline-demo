@@ -19,7 +19,7 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-    res.send('welcome to the world');
+    res.send('please do register');
 });
 
 
