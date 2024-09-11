@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'jenkin-node' // Replace with your actual NodeJS installation name in Jenkins
+    }
+
+    stages {
+        stage('Setup Known Hosts') {
+            steps {
+                script {
+                    // Add the server's SSH key to known_hosts securely
+                    sh '''
+                    ssh-keyscan -H 13.235.77.211 >> ~/.ssh/known_hosts
+                    ssh-keyscan -H 15.206.127.28 >> ~/.ssh/known_hosts
+                    '''
+                }
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                // Checkout code from GitHub repository locally
+                git branch: 'main', url: 'https://github.com/Aj052001/pipeline-demo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Placeholder for the build process
+                    sh 'echo "Build step executed"'
+                }
+            }
+        }
+       
+
+
+        
+         stage('Deploy to Server 1 (13.235.77.211)') {
+            steps {
+                script {
+                    // Deploy the project to the first remote server directly via SSH
+                    sh '''
+                    sudo -u jenkins ssh -i /var/lib/jenkins/.ssh/ajay-key-pair.pem ubuntu@13.235.77.211 '
+                    if [ ! -d /home/ubuntu/new-app ]; then
+                        mkdir -p /home/ubuntu/new-app && echo "Directory created";
+                    fi
+                    cd /home/ubuntu/new-app;
+                    if [ -d .git ]; then
+                        echo "Git repository found, pulling latest changes";
+                        git pull origin main && echo "Repository updated";
+                    else
+                        echo "Cloning repository";
+                        git clone https://github.com/Aj052001/pipeline-demo.git . && echo "Repository cloned";
+                    fi
+                    npm install && pm2 delete all && pm2 start index.js --name node-app  && echo "Deployment completed on Server 1";
+                    '
+                    '''
+                }
+            }
+        }
+         stage('Deploy to Server 2 (15.206.127.28)') {
+            steps {
+                script {
+                    // Deploy the project to the first remote server directly via SSH
+                    sh '''
+                    sudo -u jenkins ssh -i /var/lib/jenkins/.ssh/ajay-key-pair.pem ubuntu@15.206.127.28 '
+                    if [ ! -d /home/ubuntu/new-app ]; then
+                        mkdir -p /home/ubuntu/new-app && echo "Directory created";
+                    fi
+                    cd /home/ubuntu/new-app;
+                    if [ -d .git ]; then
+                        echo "Git repository found, pulling latest changes";
+                        git pull origin main && echo "Repository updated";
+                    else
+                        echo "Cloning repository";
+                        git clone https://github.com/Aj052001/pipeline-demo.git . && echo "Repository cloned";
+                    fi
+                    npm install && pm2 delete all && pm2 start index.js --name node-app  && echo "Deployment completed on Server 2";
+                    '
+                    '''
+                }
+            }
+        }
+         
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully for both servers.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
