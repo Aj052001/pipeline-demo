@@ -10,6 +10,12 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 
+app.get('/login', (req, res) => {
+    res.send('Please login into the website');
+});
+
+
+
 // Start the server
 const server = app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
